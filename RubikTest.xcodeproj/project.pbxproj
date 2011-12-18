@@ -8,7 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		16769645147EC0DF00D2CCD2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16769644147EC0DF00D2CCD2 /* main.cpp */; };
-		16769647147EC0DF00D2CCD2 /* RubikTest.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 16769646147EC0DF00D2CCD2 /* RubikTest.1 */; };
+		1676964E147EC2CA00D2CCD2 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1676964D147EC2CA00D2CCD2 /* GLUT.framework */; };
+		16769650147EC2D100D2CCD2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1676964F147EC2D100D2CCD2 /* OpenGL.framework */; };
+		16769654147ECA5300D2CCD2 /* rubiks_cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16769653147ECA5300D2CCD2 /* rubiks_cube.cpp */; };
+		16F42E11149B6AD400982DD5 /* cursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16F42E10149B6AD400982DD5 /* cursor.cpp */; };
+		16F42E14149B765200982DD5 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16F42E13149B765200982DD5 /* utils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -18,7 +22,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				16769647147EC0DF00D2CCD2 /* RubikTest.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -27,7 +30,15 @@
 /* Begin PBXFileReference section */
 		16769640147EC0DE00D2CCD2 /* RubikTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RubikTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		16769644147EC0DF00D2CCD2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		16769646147EC0DF00D2CCD2 /* RubikTest.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = RubikTest.1; sourceTree = "<group>"; };
+		1676964D147EC2CA00D2CCD2 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		1676964F147EC2D100D2CCD2 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		16769652147ECA4A00D2CCD2 /* rubiks_cube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rubiks_cube.h; sourceTree = "<group>"; };
+		16769653147ECA5300D2CCD2 /* rubiks_cube.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rubiks_cube.cpp; sourceTree = "<group>"; };
+		16769655147ED6D600D2CCD2 /* dependencies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dependencies.h; sourceTree = "<group>"; };
+		16F42E0E149B6ACB00982DD5 /* cursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cursor.h; sourceTree = "<group>"; };
+		16F42E10149B6AD400982DD5 /* cursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cursor.cpp; sourceTree = "<group>"; };
+		16F42E12149B764B00982DD5 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		16F42E13149B765200982DD5 /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16769650147EC2D100D2CCD2 /* OpenGL.framework in Frameworks */,
+				1676964E147EC2CA00D2CCD2 /* GLUT.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +57,7 @@
 		16769635147EC0DD00D2CCD2 = {
 			isa = PBXGroup;
 			children = (
+				16769651147EC2D900D2CCD2 /* Frameworks */,
 				16769643147EC0DF00D2CCD2 /* RubikTest */,
 				16769641147EC0DE00D2CCD2 /* Products */,
 			);
@@ -61,9 +75,24 @@
 			isa = PBXGroup;
 			children = (
 				16769644147EC0DF00D2CCD2 /* main.cpp */,
-				16769646147EC0DF00D2CCD2 /* RubikTest.1 */,
+				16769652147ECA4A00D2CCD2 /* rubiks_cube.h */,
+				16769653147ECA5300D2CCD2 /* rubiks_cube.cpp */,
+				16769655147ED6D600D2CCD2 /* dependencies.h */,
+				16F42E0E149B6ACB00982DD5 /* cursor.h */,
+				16F42E10149B6AD400982DD5 /* cursor.cpp */,
+				16F42E12149B764B00982DD5 /* utils.h */,
+				16F42E13149B765200982DD5 /* utils.cpp */,
 			);
 			path = RubikTest;
+			sourceTree = "<group>";
+		};
+		16769651147EC2D900D2CCD2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1676964F147EC2D100D2CCD2 /* OpenGL.framework */,
+				1676964D147EC2CA00D2CCD2 /* GLUT.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,6 +147,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				16769645147EC0DF00D2CCD2 /* main.cpp in Sources */,
+				16769654147ECA5300D2CCD2 /* rubiks_cube.cpp in Sources */,
+				16F42E11149B6AD400982DD5 /* cursor.cpp in Sources */,
+				16F42E14149B765200982DD5 /* utils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +234,7 @@
 				1676964C147EC0DF00D2CCD2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
