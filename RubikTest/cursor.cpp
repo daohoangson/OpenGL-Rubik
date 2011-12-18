@@ -122,7 +122,7 @@ void Cursor::Draw(void)
 
 void Cursor::RotateAndTranslate(void)
 {
-    int sizeHalf = floor(((RubiksCube *)m_rubik)->GetSize() / 2.f);
+    int sizeHalf = floor((double)(((RubiksCube *)m_rubik)->GetSize() / 2.f));
     
     if (m_lvl != -1)
     {
@@ -172,3 +172,4 @@ void Cursor::DrawOne(void)
     
     glPopMatrix();
 }
+

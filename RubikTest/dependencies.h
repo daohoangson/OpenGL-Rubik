@@ -27,7 +27,7 @@
 
 #ifndef __APPLE__
 #include <cstdlib>
-#include <algoritghm>
+#include <algorithm>
 #endif
 
 #endif

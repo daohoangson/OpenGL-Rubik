@@ -6,7 +6,7 @@
 #include "rubiks_cube.h"
 #include "cursor.h"
 
-float px, py;
+int px, py;
 GLdouble eyeX, eyeY, eyeZ;
 GLdouble upX, upY, upZ;
 RubiksCube *rubik;
