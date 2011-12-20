@@ -1,3 +1,7 @@
 *.zip
 RubikTest.xcodeproj/xcuserdata/
 RubikTest.xcodeproj/project.xcworkspace/
+RubikTest/ipch/
+*.user
+*.sdf
+RubikTest/Makefile.win

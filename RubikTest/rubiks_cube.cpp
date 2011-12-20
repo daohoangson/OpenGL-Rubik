@@ -39,7 +39,7 @@ RubiksCube::RubiksCube(int size)
     
     unsigned int nNumberOfCubesLevel = (unsigned int) pow((double) size, 2); // number of cubes in one level
     RubiksCubeSingle *pCube;
-    for (int i = 0; i < m_numberOfCubes; i++)
+    for (unsigned int i = 0; i < m_numberOfCubes; i++)
     {
         pCube = &m_cubes[i];
         memset(pCube, 0, sizeof(m_cubes[i]));
@@ -93,7 +93,7 @@ RubiksCube::RubiksCube(int size)
     m_y = 0;
     m_z = 0;
     m_l = 1;
-    for (int i = 0; i < m_numberOfCubes; i++)
+    for (unsigned int i = 0; i < m_numberOfCubes; i++)
     {
         ReCalculateVertexes(&m_cubes[i]);
     }
@@ -135,7 +135,7 @@ void RubiksCube::Draw(void)
 {
     glPushMatrix();
     
-    for (int i = 0; i < m_numberOfCubes; i++)
+    for (unsigned int i = 0; i < m_numberOfCubes; i++)
     {
         DrawCube(&m_cubes[i]);
     }

@@ -17,6 +17,14 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
+
+#ifdef _WIN32
+// fix stupid Visual Studio bug with 
+// non-standard stdlib.h
+// we have to override it here
+#include <stdlib.h>
+#endif
+
 #include <gl/glut.h>
 #endif
 
