@@ -57,7 +57,7 @@ typedef struct _RubiksCubeSingle
                              // v[5] == t f r
                              // v[6] == t b r
                              // v[7] == t b l
-    
+    int				p[8];
     int             angleX;
     int             angleY;
     int             angleZ;
@@ -75,6 +75,10 @@ public:
     void             RotateX(int deltaX);
     void             RotateY(int deltaY);
     
+	// duc
+	void			 DrawPickMode(void);
+	void			 Rotate(int listBlock[9], bool isCW, int lvl, int row, int col);
+	// end
     unsigned int     GetSize(void);
 private:
     GLfloat          m_x;
@@ -90,6 +94,10 @@ private:
     
     void             DrawCube(RubiksCubeSingle *cube);
     void             ReCalculateVertexes(RubiksCubeSingle *cube);
+
+	// duc
+	void			 DrawCubePickMode(RubiksCubeSingle *cube, int color);
+	// end
 };
 
 #endif

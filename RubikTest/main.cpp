@@ -23,6 +23,15 @@ void callbackIdle(void);
 void initRubik(void);
 void drawRubik(void);
 
+// duc
+#define RENDER					1
+#define SELECT					2
+int mode = RENDER;
+void drawRubikPickMode(void);
+void processPickMode();
+bool change = true;
+// end
+
 void initRubik(void)
 {
     rubik = new RubiksCube(3);
@@ -41,6 +50,17 @@ void drawRubik(void)
     glPopMatrix();
 }
 
+// duc
+void drawRubikPickMode( void )
+{
+	glPushMatrix();
+    
+    rubik->PreDraw();
+    rubik->DrawPickMode();
+       
+    glPopMatrix();
+}
+// end
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
@@ -74,12 +94,25 @@ void initGlut(void)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void callbackDisplay(void)
+// duc
+void callbackDisplay( void )
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	drawRubik();
-	glutSwapBuffers();
+
+	if (mode == SELECT)
+		drawRubikPickMode();
+	else {
+		drawRubik();
+	}
+	if (mode == SELECT)
+	{
+		processPickMode();
+		mode = RENDER;
+	}
+	else
+		glutSwapBuffers();
 }
+// end
 
 void callbackReshape(int w, int h)
 {
@@ -117,7 +150,7 @@ void callbackKeyboard(unsigned char c, int x, int y)
             cursor->ToggleDirection();
             break;
         case 'r':
-            rubik->Move(cursor, false);
+			rubik->Move(cursor, cursor->isCW());
             break;
     }
 }
@@ -127,11 +160,18 @@ void callbackMouse(int button, int state, int x, int y)
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN ) {
 		px = x;
 		py = y;
+
+		// 
+		mode = SELECT;
+		// end
 	}
+
 }
 
 void callbackMotion(int x, int y)
 {
+	if (change == true)
+	{
     if (x != px)
     {
         rubik->RotateY(x - px);
@@ -140,7 +180,7 @@ void callbackMotion(int x, int y)
     {
         rubik->RotateX(y - py);
     }
-    
+    }
 	px = x;
 	py = y;
 }
@@ -149,3 +189,25 @@ void callbackIdle(void)
 {
     glutPostRedisplay();
 }
+
+
+// duc
+void processPickMode()
+{
+	GLint viewport[4];
+	GLubyte pixel[3];
+
+	glGetIntegerv(GL_VIEWPORT,viewport);
+
+	glReadPixels(px,viewport[3]-py,1,1,GL_RGB,GL_UNSIGNED_BYTE,(void *)pixel);
+
+	printf("%d %d %d\n",pixel[0],pixel[1],pixel[2]);
+	
+	printf ("\n");
+
+	if ( pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 )
+		change = true;
+	else
+		change = false;
+}
+// end
