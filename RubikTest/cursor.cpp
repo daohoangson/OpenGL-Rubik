@@ -7,6 +7,7 @@
 //
 
 #include "cursor.h"
+#include "rubiks_cube.h"
 #include "utils.h"
 
 GLfloat CursorV[7][3] = {

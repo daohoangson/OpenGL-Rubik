@@ -5,3 +5,4 @@ RubikTest/ipch/
 *.user
 *.sdf
 RubikTest/Makefile.win
+*.suo

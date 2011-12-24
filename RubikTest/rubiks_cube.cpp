@@ -7,262 +7,8 @@
 //
 
 #include "rubiks_cube.h"
+#include "constants.h"
 #include "utils.h"
-
-/*
-GLfloat RubiksCubeNorm[6][3] = {
-    {-1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {1.0, 0.0, 0.0},
-    {0.0, -1.0, 0.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, -1.0}
-};
-// this is no longer needed 
-*/
-
-// duc
-void copyVertex( GLfloat variable[8][3], GLfloat value[8][3] );
-void rotateBlock( GLfloat vertex[8][3] );
-void copyArray( GLfloat variable[3], GLfloat value[3] );
-void copyCube( RubiksCubeSingle &des, RubiksCubeSingle &src )
-{
-
-	des.nLvl	= src.nLvl;
-	des.nRow	= src.nRow;
-	des.nCol	= src.nCol;
-
-	for ( int i = 0; i < 8; i++ )
-		des.p[i] = src.p[i];
-
-	for ( int i = 0; i < 8; i++ )
-	{
-		des.v[des.p[i]][0] = src.v[src.p[i]][0];
-		des.v[des.p[i]][1] = src.v[src.p[i]][1];
-		des.v[des.p[i]][2] = src.v[src.p[i]][2];
-	}	
-}
-
-void TranslateCube( RubiksCubeSingle &src, RubiksCubeSingle &target )
-{
-	GLfloat center_target[3];
-	for ( int i = 0; i < 3; i++ )
-	{
-		GLfloat total = 0;
-		for ( int j = 0; j < 8; j++ )
-			total = total + target.v[j][i];
-		center_target[i] = total / 8.0;
-	}
-
-	GLfloat center_src[3];
-	for ( int i = 0; i < 3; i++ )
-	{
-		GLfloat total = 0;
-		for ( int j = 0; j < 8; j++ )
-			total = total + src.v[j][i];
-		center_src[i] = total / 8.0;
-	}
-
-	GLfloat ep_X = center_target[0] - center_src[0];
-	GLfloat ep_Y = center_target[1] - center_src[1];
-	GLfloat ep_Z = center_target[2] - center_src[2];
-
-	for ( int i = 0; i < 8; i++ )
-	{
-		src.v[i][0] += ep_X;
-		src.v[i][1] += ep_Y;
-		src.v[i][2] += ep_Z;
-	}
-
-	src.nLvl	= target.nLvl;
-	src.nRow	= target.nRow;
-	src.nCol	= target.nCol;
-}
-void RotateCubeLvl( RubiksCubeSingle &cube, bool isCW )
-{
-	RubiksCubeSingle temp;// = new RubiksCubeSingle;
-
-	copyCube( temp, cube );
-	
-	if ( isCW ) {
-		copyArray( cube.v[cube.p[0]], temp.v[temp.p[3]] );
-		copyArray( cube.v[cube.p[1]], temp.v[temp.p[0]] );
-		copyArray( cube.v[cube.p[2]], temp.v[temp.p[1]] );
-		copyArray( cube.v[cube.p[3]], temp.v[temp.p[2]] );
-		copyArray( cube.v[cube.p[4]], temp.v[temp.p[7]] );
-		copyArray( cube.v[cube.p[5]], temp.v[temp.p[4]] );
-		copyArray( cube.v[cube.p[6]], temp.v[temp.p[5]] );
-		copyArray( cube.v[cube.p[7]], temp.v[temp.p[6]] );
-
-		int tmp[9];
-		for (int i = 0; i < 9; i++)
-			tmp[i] = cube.p[i];
-		cube.p[3] = tmp[0];
-		cube.p[0] = tmp[1];
-		cube.p[1] = tmp[2];
-		cube.p[2] = tmp[3];
-		cube.p[7] = tmp[4];
-		cube.p[4] = tmp[5];
-		cube.p[5] = tmp[6];
-		cube.p[6] = tmp[7];
-
-	} else {
-		copyArray( cube.v[cube.p[0]], temp.v[temp.p[1]] );
-		copyArray( cube.v[cube.p[1]], temp.v[temp.p[2]] );
-		copyArray( cube.v[cube.p[2]], temp.v[temp.p[3]] );
-		copyArray( cube.v[cube.p[3]], temp.v[temp.p[0]] );
-		copyArray( cube.v[cube.p[4]], temp.v[temp.p[5]] );
-		copyArray( cube.v[cube.p[5]], temp.v[temp.p[6]] );
-		copyArray( cube.v[cube.p[6]], temp.v[temp.p[7]] );
-		copyArray( cube.v[cube.p[7]], temp.v[temp.p[4]] );
-
-		int tmp[9];
-		for (int i = 0; i < 9; i++)
-			tmp[i] = cube.p[i];
-		cube.p[1] = tmp[0];
-		cube.p[2] = tmp[1];
-		cube.p[3] = tmp[2];
-		cube.p[0] = tmp[3];
-		cube.p[5] = tmp[4];
-		cube.p[6] = tmp[5];
-		cube.p[7] = tmp[6];
-		cube.p[4] = tmp[7];
-	}
-}
-void RotateCubeRow( RubiksCubeSingle &cube, bool isCW )
-{
-	RubiksCubeSingle temp;// = new RubiksCubeSingle;
-
-	copyCube( temp, cube );
-	
-	if ( isCW ) {
-
-		copyArray( cube.v[cube.p[0]], temp.v[temp.p[4]] );
-		copyArray( cube.v[cube.p[1]], temp.v[temp.p[0]] );
-		copyArray( cube.v[cube.p[2]], temp.v[temp.p[3]] );
-		copyArray( cube.v[cube.p[3]], temp.v[temp.p[7]] );
-		copyArray( cube.v[cube.p[4]], temp.v[temp.p[5]] );
-		copyArray( cube.v[cube.p[5]], temp.v[temp.p[1]] );
-		copyArray( cube.v[cube.p[6]], temp.v[temp.p[2]] );
-		copyArray( cube.v[cube.p[7]], temp.v[temp.p[6]] );
-
-		int tmp[9];
-		for (int i = 0; i < 9; i++)
-			tmp[i] = cube.p[i];
-		cube.p[4] = tmp[0];
-		cube.p[0] = tmp[1];
-		cube.p[3] = tmp[2];
-		cube.p[7] = tmp[3];
-		cube.p[5] = tmp[4];
-		cube.p[1] = tmp[5];
-		cube.p[2] = tmp[6];
-		cube.p[6] = tmp[7];
-	} else {
-
-		copyArray( cube.v[cube.p[0]], temp.v[temp.p[1]] );
-		copyArray( cube.v[cube.p[1]], temp.v[temp.p[5]] );
-		copyArray( cube.v[cube.p[2]], temp.v[temp.p[6]] );
-		copyArray( cube.v[cube.p[3]], temp.v[temp.p[2]] );
-		copyArray( cube.v[cube.p[4]], temp.v[temp.p[0]] );
-		copyArray( cube.v[cube.p[5]], temp.v[temp.p[4]] );
-		copyArray( cube.v[cube.p[6]], temp.v[temp.p[7]] );
-		copyArray( cube.v[cube.p[7]], temp.v[temp.p[3]] );
-
-		int tmp[9];
-		for (int i = 0; i < 9; i++)
-			tmp[i] = cube.p[i];
-		cube.p[1] = tmp[0];
-		cube.p[5] = tmp[1];
-		cube.p[6] = tmp[2];
-		cube.p[2] = tmp[3];
-		cube.p[0] = tmp[4];
-		cube.p[4] = tmp[5];
-		cube.p[7] = tmp[6];
-		cube.p[3] = tmp[7];
-	}
-}
-void RotateCubeCol( RubiksCubeSingle &cube, bool isCW )
-{
-	RubiksCubeSingle temp;// = new RubiksCubeSingle;
-
-	copyCube( temp, cube );
-	
-	if ( isCW ) {
-
-		copyArray( cube.v[cube.p[0]], temp.v[temp.p[4]] );
-		copyArray( cube.v[cube.p[1]], temp.v[temp.p[5]] );
-		copyArray( cube.v[cube.p[2]], temp.v[temp.p[1]] );
-		copyArray( cube.v[cube.p[3]], temp.v[temp.p[0]] );
-		copyArray( cube.v[cube.p[4]], temp.v[temp.p[7]] );
-		copyArray( cube.v[cube.p[5]], temp.v[temp.p[6]] );
-		copyArray( cube.v[cube.p[6]], temp.v[temp.p[2]] );
-		copyArray( cube.v[cube.p[7]], temp.v[temp.p[3]] );
-
-		int tmp[9];
-		for (int i = 0; i < 9; i++)
-			tmp[i] = cube.p[i];
-		cube.p[4] = tmp[0];
-		cube.p[5] = tmp[1];
-		cube.p[1] = tmp[2];
-		cube.p[0] = tmp[3];
-		cube.p[7] = tmp[4];
-		cube.p[6] = tmp[5];
-		cube.p[2] = tmp[6];
-		cube.p[3] = tmp[7];
-	} else {
-
-		copyArray( cube.v[cube.p[0]], temp.v[temp.p[3]] );
-		copyArray( cube.v[cube.p[1]], temp.v[temp.p[2]] );
-		copyArray( cube.v[cube.p[2]], temp.v[temp.p[6]] );
-		copyArray( cube.v[cube.p[3]], temp.v[temp.p[7]] );
-		copyArray( cube.v[cube.p[4]], temp.v[temp.p[0]] );
-		copyArray( cube.v[cube.p[5]], temp.v[temp.p[1]] );
-		copyArray( cube.v[cube.p[6]], temp.v[temp.p[5]] );
-		copyArray( cube.v[cube.p[7]], temp.v[temp.p[4]] );
-
-		int tmp[9];
-		for (int i = 0; i < 9; i++)
-			tmp[i] = cube.p[i];
-		cube.p[3] = tmp[0];
-		cube.p[2] = tmp[1];
-		cube.p[6] = tmp[2];
-		cube.p[7] = tmp[3];
-		cube.p[0] = tmp[4];
-		cube.p[1] = tmp[5];
-		cube.p[5] = tmp[6];
-		cube.p[4] = tmp[7];
-	}
-
-}
-
-int* getListCube(RubiksCubeSingle *cube, int lvl, int row, int col)
-{
-	int *res = new int[9];
-
-	int current = 0;
-	for (int i = 0; i < 27; i++)
-	{
-		if( cube[i].nLvl == lvl || cube[i].nRow == row || cube[i].nCol == col ) {
-			res[current] = i;
-			current = current + 1;
-		}
-	}
-
-	// sort
-	for ( int i = 0; i < 8; i++ )
-		for ( int j = i+1; j < 9; j++ )
-		{
-				if ( (cube[res[i]].nLvl > cube[res[j]].nLvl) || 
-					 (cube[res[i]].nLvl == cube[res[j]].nLvl && cube[res[i]].nRow > cube[res[j]].nRow) ||
-					 (cube[res[i]].nLvl == cube[res[j]].nLvl && cube[res[i]].nRow == cube[res[j]].nRow && cube[res[i]].nCol > cube[res[j]].nCol ))
-				{	 
-					int temp = res[i];
-					res[i] = res[j];
-					res[j] = temp;
-				}
-		
-		}
-
-	//
-	return res;
-}
-// end
 
 GLint RubiksCubeFaces[6][4] = {
     {0, 1, 5, 4}, // front
@@ -271,6 +17,17 @@ GLint RubiksCubeFaces[6][4] = {
     {0, 1, 2, 3}, // bottom
     {0, 3, 7, 4}, // left
     {1, 2, 6, 5}  // right
+};
+
+GLfloat RubiksCubeFacesVertexes[8][3] = {
+    {-.5f, -.5f,  .5f},
+    { .5f, -.5f,  .5f},
+    { .5f, -.5f, -.5f},
+    {-.5f, -.5f, -.5f},
+    {-.5f,  .5f,  .5f},
+    { .5f,  .5f,  .5f},
+    { .5f,  .5f, -.5f},
+    {-.5f,  .5f, -.5f}
 };
 
 RubiksCube::RubiksCube(int size)
@@ -291,10 +48,7 @@ RubiksCube::RubiksCube(int size)
     {
         pCube = &m_cubes[i];
         memset(pCube, 0, sizeof(m_cubes[i]));
-		//
-		for ( int k = 0; k < 8; k++ )
-			pCube->p[k] = k;
-		//
+
         // get cube's level, row and column
         pCube->nLvl = i / nNumberOfCubesLevel;
         pCube->nRow = (i - (pCube->nLvl * nNumberOfCubesLevel)) / m_size;
@@ -343,11 +97,6 @@ RubiksCube::RubiksCube(int size)
     m_x = 0;
     m_y = 0;
     m_z = 0;
-    m_l = 1;
-    for (unsigned int i = 0; i < m_numberOfCubes; i++)
-    {
-        ReCalculateVertexes(&m_cubes[i]);
-    }
     
     m_angle_x = 0;
     m_angle_y = 0;
@@ -360,30 +109,49 @@ RubiksCube::~RubiksCube()
     std::cout << "RubiksCube deconstructor was called!" << std::endl;
 #endif
 }
-//void RubiksCube::Move(void *cursor, bool immediately)
-//{
-//    CursorPosition pos = ((Cursor *)cursor)->getPosition();
-//    
-//    int deltaAngleX = 0;
-//    int deltaAngleY = 0;
-//    int deltaAngleZ = 0;
-//}
 
 void RubiksCube::Move(void *cursor, bool immediately)
 {
     CursorPosition pos = ((Cursor *)cursor)->getPosition();
 
-	printf("%i %i %i \n", pos.lvl, pos.row, pos.col);
-
-	printf("is CW: %i \n", pos.isCW);
-
-	printf("\n");
-
-	int *res;
-	res = getListCube(m_cubes, pos.lvl, pos.row, pos.col);
-	Rotate(res, pos.isCW, pos.lvl, pos.row, pos.col);
-	
-	printf("%i %i %i %i %i %i %i %i %i \n", res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8] );
+    RubiksCubeSingle *cube;
+    
+    for (unsigned int i = 0; i < m_numberOfCubes; i++)
+    {
+        cube = &m_cubes[i];
+        
+        if (cube->nLvl != pos.lvl
+            && cube->nRow != pos.row
+            && cube->nCol != pos.col)
+        {
+            // this cube is not selected
+            // do nothing with it
+            continue;
+        }
+        
+        cube->isMoving = true; // turn on the moving flag
+        cube->angle = 0;
+        cube->angleDelta = (pos.isCW ? 1 : -1) * (90 / FRAME_PER_MOVE);
+        
+        if (pos.lvl != -1)
+        {
+            // we are moving in level mode
+            cube->angleType = MOVE_LEVEL;
+            cube->angleDelta *= -1; // we have to do this to have correct direction
+        }
+        else if (pos.row != -1)
+        {
+            // row mode
+            cube->angleType = MOVE_ROW;
+        }
+        else
+        {
+            // column mode
+            cube->angleType = MOVE_COLUMN;
+        }
+    }
+    
+    m_last_position = pos;
 }
 
 void RubiksCube::PreDraw(void)
@@ -402,15 +170,31 @@ void RubiksCube::Draw(void)
 {
     glPushMatrix();
     
+    RubiksCubeSingle *cube;
     for (unsigned int i = 0; i < m_numberOfCubes; i++)
     {
-        DrawCube(&m_cubes[i]);
+        cube = &m_cubes[i];
+        
+        DrawCube(cube);
+        
+        if (cube->isMoving)
+        {
+            // prepare the next move
+            cube->angle += cube->angleDelta;
+            
+            if (abs(cube->angle) == 90)
+            {
+                // the move is done
+                // re-assign color, position for cubes
+                // and stop moving now
+                RePositionCubeFromMoving(cube);
+            }
+        }
     }
     
     glPopMatrix();
 }
 
-// 22.12
 void RubiksCube::DrawPickMode(void)
 {
 	glPushMatrix();
@@ -422,7 +206,7 @@ void RubiksCube::DrawPickMode(void)
     
     glPopMatrix();
 }
-// END
+
 void RubiksCube::RotateX(int deltaX)
 {
     m_angle_x += deltaX;
@@ -456,10 +240,41 @@ void RubiksCube::DrawCube(RubiksCubeSingle *cube)
     
     glPushMatrix();
     
-    if (cube->angleX != 0) glRotatef(cube->angleX, 1., 0., 0.);
-    if (cube->angleY != 0) glRotatef(cube->angleY, 0., 1., 0.);
-    if (cube->angleZ != 0) glRotatef(cube->angleZ, 0., 0., 1.);
+    // roates the cube (as it's moving)
+    if (cube->isMoving)
+    {
+        switch (cube->angleType) {
+            case MOVE_LEVEL:
+                glRotatef(cube->angle, 0.f, 1.f, 0.f);
+                break;
+                
+            case MOVE_ROW:
+                glRotatef(cube->angle, 0.f, 0.f, -1.f);
+                break;
+                
+            case MOVE_COLUMN:
+                glRotatef(cube->angle, 1.f, 0.f, 0.f);
+                break;
+                
+            default:
+                break;
+        }
+    }
     
+    // move to the drawing site
+    GLfloat x, y, z;
+    float sizeOver2 = m_size / 2;
+    x = m_x;
+    y = m_y;
+    z = m_z;
+    
+    x += (cube->nCol - sizeOver2);
+    y += (cube->nLvl - sizeOver2);
+    z += (sizeOver2 - cube->nRow);
+    
+    glTranslatef(x, y, z);
+
+    // prepares the faces' color and draws them
     for (int i = 0; i < 6; i++)
     {
         switch (cube->f[i])
@@ -482,36 +297,42 @@ void RubiksCube::DrawCube(RubiksCubeSingle *cube)
             case YELLOW:
                 glColor3f(1., 1., 0.);
                 break;
-            case NONE:
-                // skip if this face has no color
-                continue;
+            default:
+                // draws black face
+                glColor3f(0.f, 0.f, 0.f);
+                break;
         }
+                
+        DrawTriangleVertex3fv(
+                              &RubiksCubeFacesVertexes[RubiksCubeFaces[i][0]][0],
+                              &RubiksCubeFacesVertexes[RubiksCubeFaces[i][1]][0],
+                              &RubiksCubeFacesVertexes[RubiksCubeFaces[i][2]][0]);
         
         DrawTriangleVertex3fv(
-                              &cube->v[RubiksCubeFaces[i][0]][0],
-                              &cube->v[RubiksCubeFaces[i][1]][0],
-                              &cube->v[RubiksCubeFaces[i][2]][0]);
-        
-        DrawTriangleVertex3fv(
-                              &cube->v[RubiksCubeFaces[i][0]][0],
-                              &cube->v[RubiksCubeFaces[i][3]][0],
-                              &cube->v[RubiksCubeFaces[i][2]][0]);
+                              &RubiksCubeFacesVertexes[RubiksCubeFaces[i][0]][0],
+                              &RubiksCubeFacesVertexes[RubiksCubeFaces[i][3]][0],
+                              &RubiksCubeFacesVertexes[RubiksCubeFaces[i][2]][0]);
                 
         // draw the border
         glColor3f(0., 0., 0.);
         glLineWidth(4.);
         glBegin(GL_LINE_LOOP);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][0]][0]);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][1]][0]);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][2]][0]);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][3]][0]);
+        glVertex3fv(&RubiksCubeFacesVertexes[RubiksCubeFaces[i][0]][0]);
+        glVertex3fv(&RubiksCubeFacesVertexes[RubiksCubeFaces[i][1]][0]);
+        glVertex3fv(&RubiksCubeFacesVertexes[RubiksCubeFaces[i][2]][0]);
+        glVertex3fv(&RubiksCubeFacesVertexes[RubiksCubeFaces[i][3]][0]);
         glEnd();
     }
     
     glPopMatrix();
 }
 
-// 22.12
+void RubiksCube::DrawCubePickMode(RubiksCubeSingle *cube, int color)
+{
+    DrawCube(cube);
+}
+
+/*
 void RubiksCube::DrawCubePickMode(RubiksCubeSingle *cube, int color)
 {
 #if DEBUG
@@ -519,11 +340,11 @@ void RubiksCube::DrawCubePickMode(RubiksCubeSingle *cube, int color)
 #endif
     
     glPushMatrix();
-    
+
     if (cube->angleX != 0) glRotatef(cube->angleX, 1., 0., 0.);
     if (cube->angleY != 0) glRotatef(cube->angleY, 0., 1., 0.);
     if (cube->angleZ != 0) glRotatef(cube->angleZ, 0., 0., 1.);
-    
+
     for (int i = 0; i < 6; i++)
     {
 
@@ -552,98 +373,83 @@ void RubiksCube::DrawCubePickMode(RubiksCubeSingle *cube, int color)
     
     glPopMatrix();
 }
-// end
-void RubiksCube::ReCalculateVertexes(RubiksCubeSingle *cube)
+*/
+void RubiksCube::RePositionCubeFromMoving(RubiksCubeSingle *cube)
 {
-    GLfloat sizeOver2 = m_size / 2.f;
+    if (!cube->isMoving) return;
     
-    cube->v[0][0] = m_x + (cube->nCol - sizeOver2) * m_l;
-    cube->v[0][1] = m_y + (cube->nLvl - sizeOver2) * m_l;
-    cube->v[0][2] = m_z + (sizeOver2 - cube->nRow) * m_l;
+    int nLvl = cube->nLvl;
+    int nRow = cube->nRow;
+    int nCol = cube->nCol;
+
+    switch (cube->angleType)
+    {
+        case MOVE_LEVEL:
+            // keep the level, change row and column
+            if (cube->angleDelta > 0)
+            {
+                // counter close-wise
+                RotateCubeColors(cube, 0, 4, 1, 5);
+                cube->nRow = nCol;
+                cube->nCol = m_size - nRow - 1;   
+            }
+            else
+            {
+                RotateCubeColors(cube, 0, 5, 1, 4);
+                cube->nCol = cube->nRow;
+                cube->nRow = m_size - nCol - 1;
+            }
+            break;
+        case MOVE_ROW:
+            // keep the row, change level and column
+            if (cube->angleDelta > 0)
+            {
+                // close-wise
+                RotateCubeColors(cube, 2, 4, 3, 5);
+                cube->nCol = nLvl;
+                cube->nLvl = m_size - nCol - 1;
+            }
+            else
+            {
+                RotateCubeColors(cube, 2, 5, 3, 4);
+                cube->nLvl = nCol;
+                cube->nCol = m_size - nLvl - 1;
+            }
+            break;
+        case MOVE_COLUMN:
+            // keep the column, change level and row
+            if (cube->angleDelta > 0)
+            {
+                // close-wise
+                RotateCubeColors(cube, 0, 2, 1, 3);
+                cube->nLvl = nRow;
+                cube->nRow = m_size - nLvl - 1;
+            }
+            else
+            {
+                RotateCubeColors(cube, 0, 3, 1, 2);
+                cube->nRow = nLvl;
+                cube->nLvl = m_size - nRow - 1;
+            }
+            break;
+            
+        default:
+            break;
+    }
     
-    cube->v[1][0] = cube->v[0][0] + m_l;
-    cube->v[1][1] = cube->v[0][1];
-    cube->v[1][2] = cube->v[0][2];
+    cube->isMoving = false;
     
-    cube->v[2][0] = cube->v[1][0];
-    cube->v[2][1] = cube->v[1][1];
-    cube->v[2][2] = cube->v[1][2] - m_l;
-    
-    cube->v[3][0] = cube->v[0][0];
-    cube->v[3][1] = cube->v[2][1];
-    cube->v[3][2] = cube->v[2][2];
-    
-    cube->v[4][0] = cube->v[0][0];
-    cube->v[4][1] = cube->v[0][1] + m_l;
-    cube->v[4][2] = cube->v[0][2];
-    
-    cube->v[5][0] = cube->v[1][0];
-    cube->v[5][1] = cube->v[4][1];
-    cube->v[5][2] = cube->v[1][2];
-    
-    cube->v[6][0] = cube->v[2][0];
-    cube->v[6][1] = cube->v[4][1];
-    cube->v[6][2] = cube->v[2][2];
-    
-    cube->v[7][0] = cube->v[3][0];
-    cube->v[7][1] = cube->v[4][1];
-    cube->v[7][2] = cube->v[3][2];
+#ifdef DEBUG
+    std::cout << "RePositioned: (" << nLvl << "," << nRow << "," << nCol << ") -> ("
+              << cube->nLvl << "," << cube->nRow << "," << cube->nCol << ").\n";
+#endif
 }
 
-// duc
-void RubiksCube::Rotate( int listCube[], bool isCW, int lvl, int row, int col ) 
+void RubiksCube::RotateCubeColors(RubiksCubeSingle *cube, int a, int b, int c, int d)
 {
-	RubiksCubeSingle *tmp = new RubiksCubeSingle[9];
-	for ( int i = 0; i < 9; i++ ) {
-		copyCube( tmp[i], m_cubes[listCube[i]] );
-	}
-
-	if ( isCW == false) {
-		TranslateCube( m_cubes[listCube[0]], tmp[2] );
-		TranslateCube( m_cubes[listCube[1]], tmp[5] );
-		TranslateCube( m_cubes[listCube[2]], tmp[8] );
-		TranslateCube( m_cubes[listCube[3]], tmp[1] );
-		TranslateCube( m_cubes[listCube[4]], tmp[4] );
-		TranslateCube( m_cubes[listCube[5]], tmp[7] );
-		TranslateCube( m_cubes[listCube[6]], tmp[0] );
-		TranslateCube( m_cubes[listCube[7]], tmp[3] );
-		TranslateCube( m_cubes[listCube[8]], tmp[6] );
-	} else {
-		TranslateCube( m_cubes[listCube[0]], tmp[6] );
-		TranslateCube( m_cubes[listCube[1]], tmp[3] );
-		TranslateCube( m_cubes[listCube[2]], tmp[0] );
-		TranslateCube( m_cubes[listCube[3]], tmp[7] );
-		TranslateCube( m_cubes[listCube[4]], tmp[4] );
-		TranslateCube( m_cubes[listCube[5]], tmp[1] );
-		TranslateCube( m_cubes[listCube[6]], tmp[8] );
-		TranslateCube( m_cubes[listCube[7]], tmp[5] );
-		TranslateCube( m_cubes[listCube[8]], tmp[2] );
-	}
-
-	for ( int i = 0; i < 9; i++ ) {
-	
-		if ( lvl >= 0 )
-			RotateCubeLvl( m_cubes[listCube[i]], isCW );
-		else if ( row >= 0 )
-			RotateCubeRow( m_cubes[listCube[i]], isCW );
-		else 
-			RotateCubeCol( m_cubes[listCube[i]], isCW );
-	}
-
+    RubiksCubeColor tmp = cube->f[a];
+    cube->f[a]          = cube->f[b];
+    cube->f[b]          = cube->f[c];
+    cube->f[c]          = cube->f[d];
+    cube->f[d]          = tmp;
 }
-
-
-void copyVertex( GLfloat variable[8][3], GLfloat value[8][3])
-{
-	for ( int i = 0; i < 8; i++ )
-		for ( int j = 0; j < 3; j++ )
-			variable[i][j] = value[i][j];
-}
-
-void copyArray( GLfloat variable[3], GLfloat value[3] )
-{
-	for ( int i = 0; i < 3; i++ )
-		variable[i] = value[i];
-}
-
-// end

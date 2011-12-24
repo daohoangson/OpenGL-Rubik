@@ -29,6 +29,14 @@ typedef enum _RubiksCubeColor
 #define RUBIK_CUBE_COLOR_LEFT GREEN
 #define RUBIK_CUBE_COLOR_RIGHT YELLOW
 
+typedef enum _RubiksMoveType
+{
+    MOVE_NONE = 0,
+    MOVE_LEVEL,
+    MOVE_ROW,
+    MOVE_COLUMN
+} RubiksMoveType;
+
 typedef struct _RubiksCubeSingle
 {
     unsigned int    nLvl;    // level of the cube
@@ -47,20 +55,11 @@ typedef struct _RubiksCubeSingle
                              // f[3] = bottom
                              // f[4] = left
                              // f[5] = right
-    
-    GLfloat         v[8][3]; // vertexes x,y,z
-                             // v[0] == b f l
-                             // v[1] == b f r
-                             // v[2] == b b r
-                             // v[3] == b b l
-                             // v[4] == t f l
-                             // v[5] == t f r
-                             // v[6] == t b r
-                             // v[7] == t b l
-    int				p[8];
-    int             angleX;
-    int             angleY;
-    int             angleZ;
+
+    int             angle;
+    int             angleDelta;
+    RubiksMoveType  angleType;
+    bool            isMoving;
 } RubiksCubeSingle;
 
 class RubiksCube
@@ -70,34 +69,32 @@ public:
     ~RubiksCube();
     
     void             Move(void *cursor, bool immediately);
+    
     void             PreDraw(void);
     void             Draw(void);
+	void			 DrawPickMode(void);
+    
     void             RotateX(int deltaX);
     void             RotateY(int deltaY);
-    
-	// duc
-	void			 DrawPickMode(void);
-	void			 Rotate(int listBlock[9], bool isCW, int lvl, int row, int col);
-	// end
+
     unsigned int     GetSize(void);
 private:
     GLfloat          m_x;
     GLfloat          m_y;
     GLfloat          m_z;
-    GLfloat          m_l; // the width and height of a single cube
     int              m_angle_x;
     int              m_angle_y;
     
     unsigned int     m_size;
     unsigned int     m_numberOfCubes;
     RubiksCubeSingle *m_cubes;
+    CursorPosition   m_last_position;
     
     void             DrawCube(RubiksCubeSingle *cube);
-    void             ReCalculateVertexes(RubiksCubeSingle *cube);
-
-	// duc
 	void			 DrawCubePickMode(RubiksCubeSingle *cube, int color);
-	// end
+    
+    void             RePositionCubeFromMoving(RubiksCubeSingle *cube);
+    void             RotateCubeColors(RubiksCubeSingle *cube, int a, int b, int c, int d);
 };
 
 #endif

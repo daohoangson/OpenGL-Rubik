@@ -10,7 +10,6 @@
 #define RubikTest_cursor_h
 
 #include "dependencies.h"
-#include "rubiks_cube.h"
 
 typedef struct _CursorPosition
 {

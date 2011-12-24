@@ -35,6 +35,7 @@
 		16769652147ECA4A00D2CCD2 /* rubiks_cube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rubiks_cube.h; sourceTree = "<group>"; };
 		16769653147ECA5300D2CCD2 /* rubiks_cube.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rubiks_cube.cpp; sourceTree = "<group>"; };
 		16769655147ED6D600D2CCD2 /* dependencies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dependencies.h; sourceTree = "<group>"; };
+		16E76A8E14A5DA7F00D2B548 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		16F42E0E149B6ACB00982DD5 /* cursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cursor.h; sourceTree = "<group>"; };
 		16F42E10149B6AD400982DD5 /* cursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cursor.cpp; sourceTree = "<group>"; };
 		16F42E12149B764B00982DD5 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
@@ -82,6 +83,7 @@
 				16F42E10149B6AD400982DD5 /* cursor.cpp */,
 				16F42E12149B764B00982DD5 /* utils.h */,
 				16F42E13149B765200982DD5 /* utils.cpp */,
+				16E76A8E14A5DA7F00D2B548 /* constants.h */,
 			);
 			path = RubikTest;
 			sourceTree = "<group>";

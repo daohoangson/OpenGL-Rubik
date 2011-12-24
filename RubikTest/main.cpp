@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "dependencies.h"
+#include "constants.h"
 #include "rubiks_cube.h"
 #include "cursor.h"
 
@@ -18,7 +19,7 @@ void callbackReshape(int w, int h);
 void callbackKeyboard(unsigned char c, int x, int y);
 void callbackMouse(int button, int state, int x, int y);
 void callbackMotion(int x, int y);
-void callbackIdle(void);
+void callbackTimer(int value);
 
 void initRubik(void);
 void drawRubik(void);
@@ -77,7 +78,7 @@ int main(int argc, char** argv)
     glutKeyboardFunc(callbackKeyboard);
 	glutMouseFunc(callbackMouse);
 	glutMotionFunc(callbackMotion);
-    glutIdleFunc(callbackIdle);
+    glutTimerFunc(MILLISECONDS_PER_FRAME, callbackTimer, 0);
     
 	glutMainLoop();
     
@@ -185,9 +186,10 @@ void callbackMotion(int x, int y)
 	py = y;
 }
 
-void callbackIdle(void)
+void callbackTimer(int value)
 {
     glutPostRedisplay();
+    glutTimerFunc(MILLISECONDS_PER_FRAME, callbackTimer, value);
 }
 
 
