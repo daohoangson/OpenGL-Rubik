@@ -34,6 +34,7 @@ RubiksCube::RubiksCube(int size)
 {
     m_size = size;
     m_numberOfCubes = (unsigned int) pow((double) size, 3);
+    m_numberOfCubesPerLevel = (unsigned int) pow((double) size, 2); // number of cubes in one level
     
 #if DEBUG
     std::cout << "Generating Rubik's cube with size == " << m_size << std::endl;
@@ -41,8 +42,8 @@ RubiksCube::RubiksCube(int size)
     
     // generate cubes
     m_cubes = new RubiksCubeSingle[m_numberOfCubes];
+    unsigned int tmp[3];
     
-    unsigned int nNumberOfCubesLevel = (unsigned int) pow((double) size, 2); // number of cubes in one level
     RubiksCubeSingle *pCube;
     for (unsigned int i = 0; i < m_numberOfCubes; i++)
     {
@@ -50,9 +51,10 @@ RubiksCube::RubiksCube(int size)
         memset(pCube, 0, sizeof(m_cubes[i]));
 
         // get cube's level, row and column
-        pCube->nLvl = i / nNumberOfCubesLevel;
-        pCube->nRow = (i - (pCube->nLvl * nNumberOfCubesLevel)) / m_size;
-        pCube->nCol = i - (pCube->nLvl * nNumberOfCubesLevel) - (pCube->nRow * m_size);
+        GetLvlRowColFromIndex(&tmp[0], i, m_size, m_numberOfCubesPerLevel);
+        pCube->nLvl = tmp[0];
+        pCube->nRow = tmp[1];
+        pCube->nCol = tmp[2];
         
         // set color for cube's faces
         if (pCube->nLvl == 0)
@@ -110,7 +112,7 @@ RubiksCube::~RubiksCube()
 #endif
 }
 
-void RubiksCube::Move(void *cursor, bool immediately)
+void RubiksCube::Move(void *cursor)
 {
     CursorPosition pos = ((Cursor *)cursor)->getPosition();
 
@@ -119,6 +121,13 @@ void RubiksCube::Move(void *cursor, bool immediately)
     for (unsigned int i = 0; i < m_numberOfCubes; i++)
     {
         cube = &m_cubes[i];
+        
+        if (cube->isMoving)
+        {
+            // this cube is in some move
+            // reposition immediately
+            RePositionCubeFromMoving(cube);
+        }
         
         if (cube->nLvl != pos.lvl
             && cube->nRow != pos.row
@@ -154,6 +163,38 @@ void RubiksCube::Move(void *cursor, bool immediately)
     m_last_position = pos;
 }
 
+bool RubiksCube::IsSolved(void)
+{
+    RubiksCubeColor tmp[6];
+    memset(&tmp[0], 0, sizeof(tmp[0]) * 6);
+    
+    RubiksCubeSingle *cube;
+    
+    for (unsigned int i = 0; i < m_numberOfCubes; i++)
+    {
+        cube = &m_cubes[i];
+        for (int j = 0; j < 6; j++)
+        {
+            if (cube->f[j] == NONE) continue;
+
+            if (tmp[j] == NONE)
+            {
+                tmp[j] = cube->f[j];
+            }
+            else if (tmp[j] != cube->f[j])
+            {
+                // found a different cube
+                // stop checking and return false
+                return false;
+            }
+        }
+    }
+    
+    // found no difference!
+    // WOW, CONGRATS!
+    return true;
+}
+
 void RubiksCube::PreDraw(void)
 {
     if (m_angle_x != 0)
@@ -171,6 +212,8 @@ void RubiksCube::Draw(bool useSolidColors)
     glPushMatrix();
     
     RubiksCubeSingle *cube;
+    bool isRePositioned = false;
+    
     for (unsigned int i = 0; i < m_numberOfCubes; i++)
     {
         cube = &m_cubes[i];
@@ -188,8 +231,14 @@ void RubiksCube::Draw(bool useSolidColors)
                 // re-assign color, position for cubes
                 // and stop moving now
                 RePositionCubeFromMoving(cube);
+                isRePositioned = true;
             }
         }
+    }
+    
+    if (isRePositioned && IsSolved())
+    {
+        std::cout << "SOLVED!\n";
     }
     
     glPopMatrix();
@@ -268,8 +317,17 @@ void RubiksCube::DrawCube(RubiksCubeSingle *cube, bool useSolidColors)
         if (useSolidColors)
         {
             // we are in solid color mode
-            // use the same location-coded color for all faces
-            glColor3f((cube->nLvl + 1) / 255.f, (cube->nRow + 1) / 255.f, (cube->nCol + 1) / 255.f);
+            // use color to encode cube data
+            glColor3f(
+                      GetIndexFromLvlRowCol(
+                                            cube->nLvl,
+                                            cube->nRow,
+                                            cube->nCol,
+                                            m_size, m_numberOfCubesPerLevel
+                                            ) / 255.f,
+                      i / 255.f,
+                      1.f
+                      );
         }
         else
         {

@@ -39,3 +39,16 @@ void DrawTriangleVertex3fv(const GLfloat *v1, const GLfloat *v2, const GLfloat *
         DrawTriangleVertex3fv(v3, &v4[0], v2, countDown - 1);
     }
 }
+
+void GetLvlRowColFromIndex(unsigned int *result, unsigned int i, unsigned int size, unsigned int sizePow2)
+{
+    /* lvl */ result[0] = i / sizePow2;
+    /* row */ result[1] = (i - (result[0] * sizePow2)) / size;
+    /* col */ result[2] = i - (result[0] * sizePow2)
+                            - (result[1] * size);
+}
+
+unsigned int GetIndexFromLvlRowCol(unsigned int lvl, unsigned int row, unsigned int col, unsigned int size, unsigned int sizePow2)
+{
+    return lvl * sizePow2 + row * size + col;
+}

@@ -11,13 +11,13 @@
 #include "utils.h"
 
 GLfloat CursorV[7][3] = {
-    {2, 0, 1},
-    {2, 0.75, 0},
-    {2, -0.75, 0},
-    {2, 0.5, 0},
-    {2, -0.5, 0},
-    {2, -0.5, -1},
-    {2, 0.5, -1}
+    {2.5, 0, 1},
+    {2.5, 0.75, 0},
+    {2.5, -0.75, 0},
+    {2.5, 0.5, 0},
+    {2.5, -0.5, 0},
+    {2.5, -0.5, -1},
+    {2.5, 0.5, -1}
 };
 
 Cursor::Cursor(void *rubik)
@@ -85,7 +85,7 @@ void Cursor::Move(int delta)
     }
 }
 
-void Cursor::GoTo(int lvl, int row, int col)
+void Cursor::GoTo(unsigned int lvl, unsigned int row, unsigned int col)
 {
     if (m_lvl != -1)
     {
@@ -98,6 +98,81 @@ void Cursor::GoTo(int lvl, int row, int col)
     else
     {
         m_col = col;
+    }
+}
+
+void Cursor::GoToAndSetDirection(unsigned int index1,
+                                 unsigned int index2,
+                                 unsigned int face,
+                                 unsigned int size)
+{
+    m_lvl = -1;
+    m_row = -1;
+    m_col = -1;
+    
+    unsigned int pos1[3]; GetLvlRowColFromIndex(&pos1[0], index1, size, size*size);
+    unsigned int pos2[3]; GetLvlRowColFromIndex(&pos2[0], index2, size, size*size);
+
+    unsigned int lvl1 = pos1[0];
+    unsigned int row1 = pos1[1];
+    unsigned int col1 = pos1[2];
+    unsigned int lvl2 = pos2[0];
+    unsigned int row2 = pos2[1];
+    // unsigned int col2 = pos2[2]; // not used
+    
+    // each face can only be 2 kinds of move
+    // so we check for them here, manually
+    switch (face)
+    {
+        case 0 /* front  */:
+        case 1 /* back   */:
+            if (lvl1 == lvl2)
+            {
+                m_lvl = lvl1;
+            }
+            else
+            {
+                m_col = col1;
+            }
+            
+            m_isCW = (index1 > index2);
+            if (face == 1) m_isCW = !m_isCW; // revert
+            
+            break;
+        case 2 /* top    */:
+        case 3 /* bottom */:
+            if (row1 == row2)
+            {
+                m_row = row1;
+                m_isCW = (index1 < index2);
+            }
+            else
+            {
+                m_col = col1;
+                m_isCW = (index1 > index2);
+            }
+            
+            if (face == 3) m_isCW = !m_isCW; // revert
+            break;
+        case 4 /* left   */:
+        case 5 /* right  */:
+            if (lvl1 == lvl2)
+            {
+                m_lvl = lvl1;
+            }
+            else
+            {
+                m_row = row1;
+            }
+            
+            m_isCW = (index1 < index2);
+            if (face == 5) m_isCW = !m_isCW; // revert
+            break;
+        default:
+            // what?!
+            // simply reset to default
+            m_lvl = 0;
+            break;
     }
 }
 

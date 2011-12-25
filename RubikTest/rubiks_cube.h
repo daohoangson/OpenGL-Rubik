@@ -39,6 +39,7 @@ typedef enum _RubiksMoveType
 
 typedef struct _RubiksCubeSingle
 {
+    unsigned int    nId;
     unsigned int    nLvl;    // level of the cube
                              // 0 == lowest
     
@@ -68,7 +69,8 @@ public:
     RubiksCube(int size);
     ~RubiksCube();
     
-    void             Move(void *cursor, bool immediately);
+    void             Move(void *cursor);
+    bool             IsSolved(void);
     
     void             PreDraw(void);
     void             Draw(bool useSolidColors = false);
@@ -86,6 +88,7 @@ private:
     
     unsigned int     m_size;
     unsigned int     m_numberOfCubes;
+    unsigned int     m_numberOfCubesPerLevel;
     RubiksCubeSingle *m_cubes;
     CursorPosition   m_last_position;
     

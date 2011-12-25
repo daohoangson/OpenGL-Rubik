@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "rubiks_cube.h"
 #include "cursor.h"
+#include "utils.h"
 
 int px, py;
 GLdouble eyeX, eyeY, eyeZ;
@@ -22,7 +23,7 @@ typedef enum _PickingMode
     PICKING_FINISHED
 } PickingMode;
 PickingMode  pickingMode = PICKING_NONE;
-unsigned int pickedPosition[3];
+unsigned int pickedPosition;
 
 void initGlut(void);
 void callbackDisplay(void);
@@ -76,14 +77,11 @@ bool processPicking(void)
     
     switch (pickingMode) {
         case PICKING:
-            if (pixel[0] > 0 && pixel[1] > 0 && pixel[2] > 0)
+            if (pixel[2] == 255)
             {
                 // user selected a cube!
                 pickingMode = PICKED;
-                // cursor->GoTo(pixel[0] - 1, pixel[1] - 1, pixel[2] - 1);
-                pickedPosition[0] = pixel[0] - 1;
-                pickedPosition[1] = pixel[1] - 1;
-                pickedPosition[2] = pixel[2] - 1;
+                pickedPosition = pixel[0];
             }
             else
             {
@@ -93,17 +91,17 @@ bool processPicking(void)
             break;
             
         case PICKING2:
-            if (pixel[0] > 0 && pixel[1] > 0 && pixel[2] > 0)
+            if (pixel[2] == 255)
             {
-                unsigned int tmp[3];
-                tmp[0] = pixel[0] - 1;
-                tmp[1] = pixel[1] - 1;
-                tmp[2] = pixel[2] - 1;
-                if (tmp[0] != pickedPosition[0]
-                    || tmp[1] != pickedPosition[1]
-                    || tmp[2] != pickedPosition[2])
+                if (pixel[0] != pickedPosition)
                 {
-                    std::cout << "Ho ho ho!\n";
+                    cursor->GoToAndSetDirection(
+                                                pickedPosition,
+                                                pixel[0],
+                                                pixel[1],
+                                                rubik->GetSize()
+                                                );
+                    rubik->Move(cursor);
                     pickingMode = PICKING_FINISHED;
                 }
             }
@@ -213,7 +211,7 @@ void callbackKeyboard(unsigned char c, int x, int y)
             cursor->ToggleDirection();
             break;
         case 'r':
-			rubik->Move(cursor, cursor->isCW());
+			rubik->Move(cursor);
             break;
     }
 }
