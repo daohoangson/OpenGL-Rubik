@@ -166,7 +166,7 @@ void RubiksCube::PreDraw(void)
     }
 }
 
-void RubiksCube::Draw(void)
+void RubiksCube::Draw(bool useSolidColors)
 {
     glPushMatrix();
     
@@ -175,7 +175,7 @@ void RubiksCube::Draw(void)
     {
         cube = &m_cubes[i];
         
-        DrawCube(cube);
+        DrawCube(cube, useSolidColors);
         
         if (cube->isMoving)
         {
@@ -190,18 +190,6 @@ void RubiksCube::Draw(void)
                 RePositionCubeFromMoving(cube);
             }
         }
-    }
-    
-    glPopMatrix();
-}
-
-void RubiksCube::DrawPickMode(void)
-{
-	glPushMatrix();
-    
-    for (unsigned int i = 0; i < m_numberOfCubes; i++)
-    {
-        DrawCubePickMode(&m_cubes[i], i );
     }
     
     glPopMatrix();
@@ -232,7 +220,7 @@ unsigned int RubiksCube::GetSize(void)
     return m_size;
 }
 
-void RubiksCube::DrawCube(RubiksCubeSingle *cube)
+void RubiksCube::DrawCube(RubiksCubeSingle *cube, bool useSolidColors)
 {
 #if DEBUG
     // std::cout << "Drawing cube (" << cube->nLvl << ", " << cube->nRow << ", " << cube->nCol << ")" << std::endl;
@@ -277,30 +265,40 @@ void RubiksCube::DrawCube(RubiksCubeSingle *cube)
     // prepares the faces' color and draws them
     for (int i = 0; i < 6; i++)
     {
-        switch (cube->f[i])
+        if (useSolidColors)
         {
-            case WHITE:
-                glColor3f(1. ,1. ,1.);
-                break;
-            case RED:
-                glColor3f(1., 0., 0.);
-                break;
-            case BLUE:
-                glColor3f(0., 0., 1.);
-                break;
-            case ORANGE:
-                glColor3f(1., 0.6, 0.);
-                break;
-            case GREEN:
-                glColor3f(0., 1., 0.);
-                break;
-            case YELLOW:
-                glColor3f(1., 1., 0.);
-                break;
-            default:
-                // draws black face
-                glColor3f(0.f, 0.f, 0.f);
-                break;
+            // we are in solid color mode
+            // use the same location-coded color for all faces
+            glColor3f((cube->nLvl + 1) / 255.f, (cube->nRow + 1) / 255.f, (cube->nCol + 1) / 255.f);
+        }
+        else
+        {
+            // select color for each face
+            switch (cube->f[i])
+            {
+                case WHITE:
+                    glColor3f(1. ,1. ,1.);
+                    break;
+                case RED:
+                    glColor3f(1., 0., 0.);
+                    break;
+                case BLUE:
+                    glColor3f(0., 0., 1.);
+                    break;
+                case ORANGE:
+                    glColor3f(1., 0.6, 0.);
+                    break;
+                case GREEN:
+                    glColor3f(0., 1., 0.);
+                    break;
+                case YELLOW:
+                    glColor3f(1., 1., 0.);
+                    break;
+                default:
+                    // draws black face
+                    glColor3f(0.f, 0.f, 0.f);
+                    break;
+            }
         }
                 
         DrawTriangleVertex3fv(
@@ -327,53 +325,6 @@ void RubiksCube::DrawCube(RubiksCubeSingle *cube)
     glPopMatrix();
 }
 
-void RubiksCube::DrawCubePickMode(RubiksCubeSingle *cube, int color)
-{
-    DrawCube(cube);
-}
-
-/*
-void RubiksCube::DrawCubePickMode(RubiksCubeSingle *cube, int color)
-{
-#if DEBUG
-    // std::cout << "Drawing cube (" << cube->nLvl << ", " << cube->nRow << ", " << cube->nCol << ")" << std::endl;
-#endif
-    
-    glPushMatrix();
-
-    if (cube->angleX != 0) glRotatef(cube->angleX, 1., 0., 0.);
-    if (cube->angleY != 0) glRotatef(cube->angleY, 0., 1., 0.);
-    if (cube->angleZ != 0) glRotatef(cube->angleZ, 0., 0., 1.);
-
-    for (int i = 0; i < 6; i++)
-    {
-
-		glColor3f( (color+1)/27.0, (color+1)/27.0, (color+1)/27.0 );
-        
-        DrawTriangleVertex3fv(
-                              &cube->v[RubiksCubeFaces[i][0]][0],
-                              &cube->v[RubiksCubeFaces[i][1]][0],
-                              &cube->v[RubiksCubeFaces[i][2]][0]);
-        
-        DrawTriangleVertex3fv(
-                              &cube->v[RubiksCubeFaces[i][0]][0],
-                              &cube->v[RubiksCubeFaces[i][3]][0],
-                              &cube->v[RubiksCubeFaces[i][2]][0]);
-                
-        // draw the border
-        glColor3f(0., 0., 0.);
-        glLineWidth(4.);
-        glBegin(GL_LINE_LOOP);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][0]][0]);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][1]][0]);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][2]][0]);
-        glVertex3fv(&cube->v[RubiksCubeFaces[i][3]][0]);
-        glEnd();
-    }
-    
-    glPopMatrix();
-}
-*/
 void RubiksCube::RePositionCubeFromMoving(RubiksCubeSingle *cube)
 {
     if (!cube->isMoving) return;

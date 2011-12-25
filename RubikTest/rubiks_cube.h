@@ -71,8 +71,7 @@ public:
     void             Move(void *cursor, bool immediately);
     
     void             PreDraw(void);
-    void             Draw(void);
-	void			 DrawPickMode(void);
+    void             Draw(bool useSolidColors = false);
     
     void             RotateX(int deltaX);
     void             RotateY(int deltaY);
@@ -90,8 +89,7 @@ private:
     RubiksCubeSingle *m_cubes;
     CursorPosition   m_last_position;
     
-    void             DrawCube(RubiksCubeSingle *cube);
-	void			 DrawCubePickMode(RubiksCubeSingle *cube, int color);
+    void             DrawCube(RubiksCubeSingle *cube, bool useSolidColors = false);
     
     void             RePositionCubeFromMoving(RubiksCubeSingle *cube);
     void             RotateCubeColors(RubiksCubeSingle *cube, int a, int b, int c, int d);

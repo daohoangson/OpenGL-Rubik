@@ -85,6 +85,22 @@ void Cursor::Move(int delta)
     }
 }
 
+void Cursor::GoTo(int lvl, int row, int col)
+{
+    if (m_lvl != -1)
+    {
+        m_lvl = lvl;
+    }
+    else if (m_row != -1)
+    {
+        m_row = row;
+    }
+    else
+    {
+        m_col = col;
+    }
+}
+
 CursorPosition Cursor::getPosition(void)
 {
     CursorPosition pos = {0};

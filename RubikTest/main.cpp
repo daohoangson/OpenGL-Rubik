@@ -13,6 +13,17 @@ GLdouble upX, upY, upZ;
 RubiksCube *rubik;
 Cursor *cursor;
 
+typedef enum _PickingMode
+{
+    PICKING_NONE = 0,
+    PICKING,
+    PICKED,
+    PICKING2,
+    PICKING_FINISHED
+} PickingMode;
+PickingMode  pickingMode = PICKING_NONE;
+unsigned int pickedPosition[3];
+
 void initGlut(void);
 void callbackDisplay(void);
 void callbackReshape(int w, int h);
@@ -23,15 +34,9 @@ void callbackTimer(int value);
 
 void initRubik(void);
 void drawRubik(void);
+bool processPicking(void);
 
-// duc
-#define RENDER					1
-#define SELECT					2
-int mode = RENDER;
-void drawRubikPickMode(void);
-void processPickMode();
-bool change = true;
-// end
+#pragma mark - Implementation
 
 void initRubik(void)
 {
@@ -44,24 +49,85 @@ void drawRubik(void)
     glPushMatrix();
     
     rubik->PreDraw();
-    rubik->Draw();
     
-    cursor->Draw();
+    bool useSolidColors = pickingMode == PICKING || pickingMode == PICKING2;
+    
+    rubik->Draw(useSolidColors);
+    if (!useSolidColors)
+    {
+        cursor->Draw();
+    }
     
     glPopMatrix();
 }
 
-// duc
-void drawRubikPickMode( void )
+bool processPicking(void)
 {
-	glPushMatrix();
+    GLint viewport[4];
+	GLubyte pixel[3];
+    bool processed = false;
     
-    rubik->PreDraw();
-    rubik->DrawPickMode();
-       
-    glPopMatrix();
+	glGetIntegerv(GL_VIEWPORT, viewport);
+    
+	glReadPixels(px, viewport[3]-py,
+                 1, 1, GL_RGB,
+                 GL_UNSIGNED_BYTE, (void *)pixel
+                 );
+    
+    switch (pickingMode) {
+        case PICKING:
+            if (pixel[0] > 0 && pixel[1] > 0 && pixel[2] > 0)
+            {
+                // user selected a cube!
+                pickingMode = PICKED;
+                // cursor->GoTo(pixel[0] - 1, pixel[1] - 1, pixel[2] - 1);
+                pickedPosition[0] = pixel[0] - 1;
+                pickedPosition[1] = pixel[1] - 1;
+                pickedPosition[2] = pixel[2] - 1;
+            }
+            else
+            {
+                pickingMode = PICKING_NONE;
+            }
+            processed = true;
+            break;
+            
+        case PICKING2:
+            if (pixel[0] > 0 && pixel[1] > 0 && pixel[2] > 0)
+            {
+                unsigned int tmp[3];
+                tmp[0] = pixel[0] - 1;
+                tmp[1] = pixel[1] - 1;
+                tmp[2] = pixel[2] - 1;
+                if (tmp[0] != pickedPosition[0]
+                    || tmp[1] != pickedPosition[1]
+                    || tmp[2] != pickedPosition[2])
+                {
+                    std::cout << "Ho ho ho!\n";
+                    pickingMode = PICKING_FINISHED;
+                }
+            }
+            else
+            {
+                pickingMode = PICKED;
+            }
+            processed = true;
+            break;
+            
+        default:
+            break;
+    }
+    
+#ifdef DEBUG
+    if (processed)
+    {
+        std::cout << "Pixel values: " << (int) pixel[0] << ", " << (int) pixel[1] << ", " << (int) pixel[2] << "\n";
+    }
+#endif
+    
+    return processed;
 }
-// end
+
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
@@ -95,25 +161,21 @@ void initGlut(void)
 	glEnable(GL_DEPTH_TEST);
 }
 
-// duc
 void callbackDisplay( void )
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	if (mode == SELECT)
-		drawRubikPickMode();
-	else {
-		drawRubik();
-	}
-	if (mode == SELECT)
+    drawRubik();
+	
+	if (processPicking())
 	{
-		processPickMode();
-		mode = RENDER;
+		// do not swap buffer
 	}
 	else
+    {
 		glutSwapBuffers();
+    }
 }
-// end
 
 void callbackReshape(int w, int h)
 {
@@ -158,32 +220,43 @@ void callbackKeyboard(unsigned char c, int x, int y)
 
 void callbackMouse(int button, int state, int x, int y) 
 {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN ) {
-		px = x;
-		py = y;
+	if (button == GLUT_LEFT_BUTTON) {
+        if (state == GLUT_DOWN)
+        {
+            px = x;
+            py = y;
 
-		// 
-		mode = SELECT;
-		// end
+            pickingMode = PICKING;
+        }
+        else if (state == GLUT_UP)
+        {
+            pickingMode = PICKING_NONE;
+        }
 	}
 
 }
 
 void callbackMotion(int x, int y)
 {
-	if (change == true)
-	{
-    if (x != px)
+    if (pickingMode == PICKING_NONE)
     {
-        rubik->RotateY(x - px);
+        if (x != px)
+        {
+            rubik->RotateY(x - px);
+        }
+        if (y != py)
+        {
+            rubik->RotateX(y - py);
+        }
     }
-    if (y != py)
-    {
-        rubik->RotateX(y - py);
-    }
-    }
+
 	px = x;
 	py = y;
+    
+    if (pickingMode == PICKED)
+    {
+        pickingMode = PICKING2;
+    }
 }
 
 void callbackTimer(int value)
@@ -191,25 +264,3 @@ void callbackTimer(int value)
     glutPostRedisplay();
     glutTimerFunc(MILLISECONDS_PER_FRAME, callbackTimer, value);
 }
-
-
-// duc
-void processPickMode()
-{
-	GLint viewport[4];
-	GLubyte pixel[3];
-
-	glGetIntegerv(GL_VIEWPORT,viewport);
-
-	glReadPixels(px,viewport[3]-py,1,1,GL_RGB,GL_UNSIGNED_BYTE,(void *)pixel);
-
-	printf("%d %d %d\n",pixel[0],pixel[1],pixel[2]);
-	
-	printf ("\n");
-
-	if ( pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 )
-		change = true;
-	else
-		change = false;
-}
-// end

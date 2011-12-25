@@ -27,6 +27,7 @@ public:
     void            SwitchMode(void);
     void            ToggleDirection(void);
     void            Move(int delta);
+    void            GoTo(int lvl, int row, int col);
     
     CursorPosition  getPosition(void);
     bool            isCW(void);
