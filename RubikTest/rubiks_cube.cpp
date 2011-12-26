@@ -146,17 +146,19 @@ void RubiksCube::Move(void *cursor)
         {
             // we are moving in level mode
             cube->angleType = MOVE_LEVEL;
-            cube->angleDelta *= -1; // we have to do this to have correct direction
+            cube->angleDelta *= -2; // we have to do this to have correct direction
         }
         else if (pos.row != -1)
         {
             // row mode
             cube->angleType = MOVE_ROW;
+			cube->angleDelta *= 2;
         }
         else
         {
             // column mode
             cube->angleType = MOVE_COLUMN;
+			cube->angleDelta *= 2;
         }
     }
     
@@ -238,7 +240,7 @@ void RubiksCube::Draw(bool useSolidColors)
     
     if (isRePositioned && IsSolved())
     {
-        std::cout << "SOLVED!\n";
+        //std::cout << "SOLVED!\n";
     }
     
     glPopMatrix();
@@ -371,7 +373,7 @@ void RubiksCube::DrawCube(RubiksCubeSingle *cube, bool useSolidColors)
                 
         // draw the border
         glColor3f(0., 0., 0.);
-        glLineWidth(4.);
+        glLineWidth(3.);
         glBegin(GL_LINE_LOOP);
         glVertex3fv(&RubiksCubeFacesVertexes[RubiksCubeFaces[i][0]][0]);
         glVertex3fv(&RubiksCubeFacesVertexes[RubiksCubeFaces[i][1]][0]);

@@ -13,7 +13,7 @@ GLdouble eyeX, eyeY, eyeZ;
 GLdouble upX, upY, upZ;
 RubiksCube *rubik;
 Cursor *cursor;
-
+bool hideCursor = false;
 typedef enum _PickingMode
 {
     PICKING_NONE = 0,
@@ -54,7 +54,7 @@ void drawRubik(void)
     bool useSolidColors = pickingMode == PICKING || pickingMode == PICKING2;
     
     rubik->Draw(useSolidColors);
-    if (!useSolidColors)
+    if (!useSolidColors && hideCursor == false)
     {
         cursor->Draw();
     }
@@ -213,6 +213,11 @@ void callbackKeyboard(unsigned char c, int x, int y)
         case 'r':
 			rubik->Move(cursor);
             break;
+		case 'h':
+			if ( hideCursor == true )
+				hideCursor = false;
+			else 
+				hideCursor = true;
     }
 }
 
